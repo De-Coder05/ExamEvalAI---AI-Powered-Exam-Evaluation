@@ -7,8 +7,10 @@ import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import AuthCallback from "./pages/AuthCallback";
 import StudentDashboard from "./pages/StudentDashboard";
 import ProfessorDashboard from "./pages/ProfessorDashboard";
+import TakeExam from "./pages/TakeExam";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,8 +26,10 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/auth/success" element={<AuthCallback />} />
               <Route path="/student-dashboard" element={<StudentDashboard />} />
               <Route path="/professor-dashboard" element={<ProfessorDashboard />} />
+              <Route path="/take-exam/:examId" element={<TakeExam />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

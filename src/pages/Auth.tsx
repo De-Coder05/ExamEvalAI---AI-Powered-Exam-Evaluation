@@ -37,7 +37,7 @@ const Auth = () => {
 
   const validateForm = () => {
     const newErrors: { email?: string; password?: string } = {};
-    
+
     const emailResult = emailSchema.safeParse(email);
     if (!emailResult.success) {
       newErrors.email = emailResult.error.errors[0].message;
@@ -52,45 +52,57 @@ const Auth = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validateForm()) return;
-    
+  const handleLogin = async () => {
     setIsLoading(true);
-
     try {
-      if (mode === "login") {
-        const { error } = await signIn(email, password);
-        if (error) {
-          toast({
-            title: "Login Failed",
-            description: error.message === "Invalid login credentials" 
-              ? "Invalid email or password. Please try again."
-              : error.message,
-            variant: "destructive",
-          });
-        }
-      } else {
-        const { error } = await signUp(email, password, selectedRole, fullName);
-        if (error) {
-          const message = error.message.includes("already registered")
-            ? "This email is already registered. Please sign in instead."
-            : error.message;
-          toast({
-            title: "Signup Failed",
-            description: message,
-            variant: "destructive",
-          });
-        } else {
-          toast({
-            title: "Account Created",
-            description: "Welcome! Your account has been created successfully.",
-          });
-        }
+      const { error } = await signIn(email, password);
+      if (error) {
+        toast({
+          title: "Login Failed",
+          description: error.message === "Invalid login credentials"
+            ? "Invalid email or password. Please try again."
+            : error.message,
+          variant: "destructive",
+        });
       }
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleSignup = async () => {
+    setIsLoading(true);
+    try {
+      const { error } = await signUp(email, password, selectedRole, fullName);
+      if (error) {
+        const message = error.message.includes("already registered")
+          ? "This email is already registered. Please sign in instead."
+          : error.message;
+        toast({
+          title: "Signup Failed",
+          description: message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Account Created",
+          description: "Welcome! Your account has been created successfully.",
+        });
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validateForm()) return;
+
+    if (mode === "login") {
+      await handleLogin();
+    } else {
+      await handleSignup();
     }
   };
 
@@ -147,8 +159,8 @@ const Auth = () => {
                 {mode === "login" ? "Welcome Back" : "Create Account"}
               </h1>
               <p className="text-muted-foreground mt-2">
-                {mode === "login" 
-                  ? "Sign in to access your dashboard" 
+                {mode === "login"
+                  ? "Sign in to access your dashboard"
                   : "Join the AI-powered evaluation platform"}
               </p>
             </div>
@@ -216,34 +228,28 @@ const Auth = () => {
                       <button
                         type="button"
                         onClick={() => setSelectedRole("student")}
-                        className={`p-4 rounded-xl border-2 transition-all ${
-                          selectedRole === "student"
-                            ? "border-primary bg-primary/10"
-                            : "border-border hover:border-primary/50"
-                        }`}
+                        className={`p-4 rounded-xl border-2 transition-all ${selectedRole === "student"
+                          ? "border-primary bg-primary/10"
+                          : "border-border hover:border-primary/50"
+                          }`}
                       >
-                        <GraduationCap className={`w-6 h-6 mx-auto mb-2 ${
-                          selectedRole === "student" ? "text-primary" : "text-muted-foreground"
-                        }`} />
-                        <p className={`text-sm font-medium ${
-                          selectedRole === "student" ? "text-foreground" : "text-muted-foreground"
-                        }`}>Student</p>
+                        <GraduationCap className={`w-6 h-6 mx-auto mb-2 ${selectedRole === "student" ? "text-primary" : "text-muted-foreground"
+                          }`} />
+                        <p className={`text-sm font-medium ${selectedRole === "student" ? "text-foreground" : "text-muted-foreground"
+                          }`}>Student</p>
                       </button>
                       <button
                         type="button"
                         onClick={() => setSelectedRole("professor")}
-                        className={`p-4 rounded-xl border-2 transition-all ${
-                          selectedRole === "professor"
-                            ? "border-primary bg-primary/10"
-                            : "border-border hover:border-primary/50"
-                        }`}
+                        className={`p-4 rounded-xl border-2 transition-all ${selectedRole === "professor"
+                          ? "border-primary bg-primary/10"
+                          : "border-border hover:border-primary/50"
+                          }`}
                       >
-                        <BookOpen className={`w-6 h-6 mx-auto mb-2 ${
-                          selectedRole === "professor" ? "text-primary" : "text-muted-foreground"
-                        }`} />
-                        <p className={`text-sm font-medium ${
-                          selectedRole === "professor" ? "text-foreground" : "text-muted-foreground"
-                        }`}>Professor</p>
+                        <BookOpen className={`w-6 h-6 mx-auto mb-2 ${selectedRole === "professor" ? "text-primary" : "text-muted-foreground"
+                          }`} />
+                        <p className={`text-sm font-medium ${selectedRole === "professor" ? "text-foreground" : "text-muted-foreground"
+                          }`}>Professor</p>
                       </button>
                     </div>
                   </div>

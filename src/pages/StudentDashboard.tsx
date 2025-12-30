@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
@@ -15,7 +15,18 @@ import {
   User,
   BookOpen,
   BarChart3,
+  Play,
+  Eye
 } from "lucide-react";
+import { ExamResultDialog } from "@/components/ExamResultDialog";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+
+interface Exam {
+  _id: string;
+  title: string;
+  subject: string;
+  totalScore: number;
+}
 
 const StudentDashboard = () => {
   const { user, role, loading, signOut } = useAuth();
@@ -35,19 +46,57 @@ const StudentDashboard = () => {
     );
   }
 
+  const [availableExams, setAvailableExams] = useState<Exam[]>([]);
+  const [mySubmissions, setMySubmissions] = useState<any[]>([]);
+  const [showAnalytics, setShowAnalytics] = useState(false);
+
+  const fetchData = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      // Fetch Available Exams
+      const examsRes = await fetch(`${import.meta.env.VITE_API_URL}/exams`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (examsRes.ok) {
+        setAvailableExams(await examsRes.json());
+      }
+
+      // Fetch My Submissions
+      const subsRes = await fetch(`${import.meta.env.VITE_API_URL}/submissions/my`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (subsRes.ok) {
+        setMySubmissions(await subsRes.json());
+      }
+
+    } catch (error) {
+      console.error("Failed to fetch data", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+    const interval = setInterval(fetchData, 10000); // Poll every 10 seconds for real-time updates
+    return () => clearInterval(interval);
+  }, [user]);
+
+  const examsTaken = mySubmissions.length;
+  const avgScore = examsTaken > 0
+    ? Math.round(mySubmissions.reduce((acc, sub) => acc + (sub.totalScore / sub.maxScore) * 100, 0) / examsTaken)
+    : 0;
+  const pendingResults = mySubmissions.filter(s => s.status === 'pending').length;
+  const completedStats = examsTaken;
+
   const stats = [
-    { label: "Exams Taken", value: "12", icon: FileText, color: "text-primary" },
-    { label: "Average Score", value: "85%", icon: TrendingUp, color: "text-accent" },
-    { label: "Pending Results", value: "2", icon: Clock, color: "text-orange-400" },
-    { label: "Completed", value: "10", icon: CheckCircle, color: "text-green-500" },
+    { label: "Exams Taken", value: examsTaken.toString(), icon: FileText, color: "text-primary" },
+    { label: "Average Score", value: `${avgScore}%`, icon: TrendingUp, color: "text-accent" },
+    { label: "Pending Results", value: pendingResults.toString(), icon: Clock, color: "text-orange-400" },
+    { label: "Completed", value: completedStats.toString(), icon: CheckCircle, color: "text-green-500" },
   ];
 
-  const recentExams = [
-    { name: "Biology Midterm", score: "88%", date: "Dec 28, 2024", status: "graded" },
-    { name: "Chemistry Quiz 3", score: "92%", date: "Dec 25, 2024", status: "graded" },
-    { name: "Physics Final", score: "-", date: "Dec 30, 2024", status: "pending" },
-    { name: "Math Assessment", score: "78%", date: "Dec 20, 2024", status: "graded" },
-  ];
+
 
   return (
     <>
@@ -124,13 +173,16 @@ const StudentDashboard = () => {
               className="lg:col-span-2 glass-card p-6"
             >
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-serif font-semibold text-foreground">Recent Exams</h3>
-                <Button variant="ghost" size="sm">
+                <h3 className="text-lg font-serif font-semibold text-foreground">Available Exams</h3>
+                <Button variant="ghost" size="sm" onClick={() => document.getElementById('available-exams')?.scrollIntoView({ behavior: 'smooth' })}>
                   View All
                 </Button>
               </div>
-              <div className="space-y-4">
-                {recentExams.map((exam, index) => (
+              <div id="available-exams" className="space-y-4">
+                {availableExams.length === 0 && (
+                  <p className="text-muted-foreground p-4">No exams available to take.</p>
+                )}
+                {availableExams.map((exam, index) => (
                   <div
                     key={index}
                     className="flex items-center justify-between p-4 rounded-xl bg-secondary/30 border border-border/50"
@@ -140,21 +192,19 @@ const StudentDashboard = () => {
                         <BookOpen className="w-5 h-5 text-primary" />
                       </div>
                       <div>
-                        <p className="font-medium text-foreground">{exam.name}</p>
-                        <p className="text-sm text-muted-foreground">{exam.date}</p>
+                        <p className="font-medium text-foreground">{exam.title}</p>
+                        <p className="text-sm text-muted-foreground">{exam.subject}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-4">
-                      <span className={`text-lg font-bold ${
-                        exam.status === "graded" ? "gradient-text-accent" : "text-muted-foreground"
-                      }`}>
-                        {exam.score}
-                      </span>
-                      {exam.status === "graded" ? (
-                        <CheckCircle className="w-5 h-5 text-green-500" />
-                      ) : (
-                        <AlertCircle className="w-5 h-5 text-orange-400" />
-                      )}
+                      <Button
+                        variant="hero"
+                        size="sm"
+                        onClick={() => navigate(`/take-exam/${exam._id}`)}
+                      >
+                        <Play className="w-4 h-4 mr-2" />
+                        Take Exam
+                      </Button>
                     </div>
                   </div>
                 ))}
@@ -170,13 +220,13 @@ const StudentDashboard = () => {
             >
               <h3 className="text-lg font-serif font-semibold text-foreground mb-6">Quick Actions</h3>
               <div className="space-y-3">
-                <Button variant="glass" className="w-full justify-start">
+                <Button variant="glass" className="w-full justify-start" onClick={() => document.getElementById('available-exams')?.scrollIntoView({ behavior: 'smooth' })}>
                   <FileText className="w-4 h-4 mr-2" />
                   View All Exams
                 </Button>
-                <Button variant="glass" className="w-full justify-start">
+                <Button variant="glass" className="w-full justify-start" onClick={() => setShowAnalytics(!showAnalytics)}>
                   <BarChart3 className="w-4 h-4 mr-2" />
-                  Performance Analytics
+                  {showAnalytics ? "Hide Analytics" : "Performance Analytics"}
                 </Button>
                 <Button variant="glass" className="w-full justify-start">
                   <User className="w-4 h-4 mr-2" />
@@ -184,19 +234,41 @@ const StudentDashboard = () => {
                 </Button>
               </div>
 
-              {/* Performance Summary */}
-              <div className="mt-8 p-4 rounded-xl bg-accent/10 border border-accent/30">
-                <p className="text-sm text-muted-foreground mb-2">Overall Performance</p>
-                <div className="flex items-center gap-2">
-                  <div className="flex-1 h-2 bg-secondary rounded-full overflow-hidden">
-                    <div className="h-full w-[85%] bg-gradient-to-r from-accent to-cyan-400 rounded-full" />
-                  </div>
-                  <span className="text-sm font-bold text-accent">85%</span>
+              {/* Performance Summary / My Submissions */}
+              <div className="mt-8">
+                <h3 className="text-lg font-serif font-semibold text-foreground mb-4">Past Results</h3>
+                <div className="space-y-3 max-h-[300px] overflow-y-auto">
+                  {mySubmissions.map((sub, i) => (
+                    <div key={i} className="p-3 rounded-lg bg-secondary/20 flex justify-between items-center">
+                      <div>
+                        <p className="font-medium text-sm text-foreground">{sub.examId?.title || "Exam"}</p>
+                        <p className="text-xs text-muted-foreground">{new Date(sub.submittedAt).toLocaleDateString()}</p>
+                      </div>
+                      <div className="text-right">
+                        <span className="block font-bold text-accent">{sub.totalScore}/{sub.maxScore}</span>
+                        <span className="text-[10px] uppercase text-muted-foreground">{sub.status}</span>
+                      </div>
+                    </div>
+                  ))}
+                  {mySubmissions.length === 0 && <p className="text-xs text-muted-foreground">No submissions yet.</p>}
                 </div>
-                <p className="text-xs text-muted-foreground mt-2">
-                  You're performing above average!
-                </p>
               </div>
+
+              {/* Analytics Graph Placeholder */}
+              {showAnalytics && (
+                <div className="mt-8 p-4 rounded-xl bg-accent/10 border border-accent/30">
+                  <p className="text-sm text-muted-foreground mb-2">Overall Performance</p>
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 h-2 bg-secondary rounded-full overflow-hidden">
+                      <div className="h-full bg-gradient-to-r from-accent to-cyan-400 rounded-full" style={{ width: `${avgScore}%` }} />
+                    </div>
+                    <span className="text-sm font-bold text-accent">{avgScore}%</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    {avgScore > 80 ? "Excellent work!" : avgScore > 60 ? "Good job!" : "Keep practicing!"}
+                  </p>
+                </div>
+              )}
             </motion.div>
           </div>
         </main>

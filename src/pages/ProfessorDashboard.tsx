@@ -1,9 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Helmet } from "react-helmet-async";
+import { CreateExamDialog } from "@/components/CreateExamDialog";
 import {
   BookOpen,
   Users,
@@ -17,7 +18,19 @@ import {
   Settings,
   CheckCircle,
   AlertCircle,
+  Eye
 } from "lucide-react";
+import { ExamResultDialog } from "@/components/ExamResultDialog";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+
+interface Exam {
+  _id: string;
+  title: string;
+  subject: string;
+  submissions: number; // Placeholder, as backend doesn't aggregate yet
+  totalQuestions: number;
+  createdAt: string;
+}
 
 const ProfessorDashboard = () => {
   const { user, role, loading, signOut } = useAuth();
@@ -37,24 +50,52 @@ const ProfessorDashboard = () => {
     );
   }
 
+  const [exams, setExams] = useState<Exam[]>([]);
+  const [submissions, setSubmissions] = useState<any[]>([]);
+  const [showAnalytics, setShowAnalytics] = useState(false);
+
+  const fetchData = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      // Fetch Active Exams
+      const examResponse = await fetch(`${import.meta.env.VITE_API_URL}/exams`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (examResponse.ok) {
+        setExams(await examResponse.json());
+      }
+
+      // Fetch Recent Submissions
+      const subResponse = await fetch(`${import.meta.env.VITE_API_URL}/submissions`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (subResponse.ok) {
+        setSubmissions(await subResponse.json());
+      }
+
+    } catch (error) {
+      console.error("Failed to fetch data", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+    const interval = setInterval(fetchData, 10000); // Real-time polling
+    return () => clearInterval(interval);
+  }, [user]);
+
+  const uniqueStudents = new Set(submissions.map(s => s.student?._id)).size;
+  const avgScore = submissions.length > 0
+    ? Math.round(submissions.reduce((acc, s) => acc + (s.totalScore / s.maxScore) * 100, 0) / submissions.length)
+    : 0;
+
   const stats = [
-    { label: "Total Students", value: "156", icon: Users, color: "text-primary" },
-    { label: "Active Exams", value: "8", icon: FileText, color: "text-accent" },
-    { label: "Pending Reviews", value: "24", icon: Clock, color: "text-orange-400" },
-    { label: "Avg Class Score", value: "82%", icon: TrendingUp, color: "text-green-500" },
-  ];
-
-  const recentSubmissions = [
-    { student: "John Smith", exam: "Biology Midterm", score: "88%", status: "graded" },
-    { student: "Sarah Johnson", exam: "Biology Midterm", score: "-", status: "pending" },
-    { student: "Mike Wilson", exam: "Chemistry Quiz 3", score: "92%", status: "graded" },
-    { student: "Emily Brown", exam: "Physics Final", score: "-", status: "pending" },
-  ];
-
-  const activeExams = [
-    { name: "Biology Midterm", submissions: 45, total: 50, deadline: "Dec 31, 2024" },
-    { name: "Chemistry Quiz 3", submissions: 38, total: 42, deadline: "Jan 2, 2025" },
-    { name: "Physics Final", submissions: 12, total: 50, deadline: "Jan 5, 2025" },
+    { label: "Total Students", value: uniqueStudents.toString(), icon: Users, color: "text-primary" },
+    { label: "Active Exams", value: exams.length.toString(), icon: FileText, color: "text-accent" },
+    { label: "Submissions", value: submissions.length.toString(), icon: Clock, color: "text-orange-400" },
+    { label: "Avg Class Score", value: `${avgScore}%`, icon: TrendingUp, color: "text-green-500" },
   ];
 
   return (
@@ -104,10 +145,12 @@ const ProfessorDashboard = () => {
                 Manage your exams and review student submissions.
               </p>
             </div>
-            <Button variant="hero" size="lg">
-              <Plus className="w-4 h-4 mr-2" />
-              Create New Exam
-            </Button>
+            <CreateExamDialog onSuccess={fetchData}>
+              <Button variant="hero" size="lg">
+                <Plus className="w-4 h-4 mr-2" />
+                Create New Exam
+              </Button>
+            </CreateExamDialog>
           </motion.div>
 
           {/* Stats Grid */}
@@ -144,38 +187,63 @@ const ProfessorDashboard = () => {
                 </Button>
               </div>
               <div className="space-y-4">
-                {recentSubmissions.map((submission, index) => (
-                  <div
+                {submissions.slice(0, 5).map((submission, index) => (
+                  <ExamResultDialog
                     key={index}
-                    className="flex items-center justify-between p-4 rounded-xl bg-secondary/30 border border-border/50"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                        <User className="w-5 h-5 text-primary" />
+                    submission={submission}
+                    trigger={
+                      <div className="flex items-center justify-between p-4 rounded-xl bg-secondary/30 border border-border/50 cursor-pointer hover:bg-secondary/50 transition-colors">
+                        <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                            <User className="w-5 h-5 text-primary" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-foreground">{submission.student?.displayName || "Student"}</p>
+                            <p className="text-sm text-muted-foreground">{submission.exam?.title || "Exam"}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <span className={`text-lg font-bold ${submission.status === "graded" ? "gradient-text" : "text-muted-foreground"}`}>
+                            {submission.totalScore}/{submission.maxScore}
+                          </span>
+                          {submission.status === "graded" ? (
+                            <CheckCircle className="w-5 h-5 text-green-500" />
+                          ) : (
+                            <Button variant="glass" size="sm">Grade</Button>
+                          )}
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium text-foreground">{submission.student}</p>
-                        <p className="text-sm text-muted-foreground">{submission.exam}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <span className={`text-lg font-bold ${
-                        submission.status === "graded" ? "gradient-text" : "text-muted-foreground"
-                      }`}>
-                        {submission.score}
-                      </span>
-                      {submission.status === "graded" ? (
-                        <CheckCircle className="w-5 h-5 text-green-500" />
-                      ) : (
-                        <Button variant="glass" size="sm">
-                          Grade
-                        </Button>
-                      )}
-                    </div>
-                  </div>
+                    }
+                  />
                 ))}
+                {submissions.length === 0 && <p className="p-4 text-muted-foreground">No submissions yet.</p>}
               </div>
             </motion.div>
+
+            {/* Analytics Section (Conditional) */}
+            {showAnalytics && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                className="lg:col-span-3 glass-card p-6 mt-6"
+              >
+                <h3 className="text-lg font-serif font-semibold text-foreground mb-6">Class Performance</h3>
+                <div className="h-[300px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={exams}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
+                      <XAxis dataKey="title" stroke="#ffffff50" fontSize={10} />
+                      <YAxis stroke="#ffffff50" fontSize={10} />
+                      <Tooltip
+                        contentStyle={{ backgroundColor: '#000', border: '1px solid #ffffff20', borderRadius: '8px' }}
+                        cursor={{ fill: '#ffffff10' }}
+                      />
+                      <Bar dataKey="totalQuestions" name="Questions" fill="#06b6d4" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                  <p className="text-center text-xs text-muted-foreground mt-2">Note: Real average score aggregation per exam requires backend update. Showing question count for demo.</p>
+                </div>
+              </motion.div>
+            )}
 
             {/* Right Column */}
             <div className="space-y-6">
@@ -188,17 +256,19 @@ const ProfessorDashboard = () => {
               >
                 <h3 className="text-lg font-serif font-semibold text-foreground mb-6">Quick Actions</h3>
                 <div className="space-y-3">
-                  <Button variant="glass" className="w-full justify-start">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Create Exam
-                  </Button>
+                  <CreateExamDialog onSuccess={fetchData}>
+                    <Button variant="glass" className="w-full justify-start">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Create Exam
+                    </Button>
+                  </CreateExamDialog>
                   <Button variant="glass" className="w-full justify-start">
                     <Users className="w-4 h-4 mr-2" />
                     Manage Students
                   </Button>
-                  <Button variant="glass" className="w-full justify-start">
+                  <Button variant="glass" className="w-full justify-start" onClick={() => setShowAnalytics(!showAnalytics)}>
                     <BarChart3 className="w-4 h-4 mr-2" />
-                    View Analytics
+                    {showAnalytics ? "Hide Analytics" : "View Analytics"}
                   </Button>
                   <Button variant="glass" className="w-full justify-start">
                     <Settings className="w-4 h-4 mr-2" />
@@ -216,21 +286,22 @@ const ProfessorDashboard = () => {
               >
                 <h3 className="text-lg font-serif font-semibold text-foreground mb-4">Active Exams</h3>
                 <div className="space-y-4">
-                  {activeExams.map((exam, index) => (
+                  {exams.map((exam, index) => (
                     <div key={index} className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <p className="text-sm font-medium text-foreground">{exam.name}</p>
-                        <span className="text-xs text-muted-foreground">{exam.deadline}</span>
+                        <p className="text-sm font-medium text-foreground">{exam.title}</p>
+                        <span className="text-xs text-muted-foreground">{new Date(exam.createdAt).toLocaleDateString()}</span>
                       </div>
                       <div className="flex items-center gap-2">
+                        {/* Placeholder progress for now */}
                         <div className="flex-1 h-2 bg-secondary rounded-full overflow-hidden">
-                          <div 
+                          <div
                             className="h-full bg-gradient-to-r from-primary to-orange-400 rounded-full"
-                            style={{ width: `${(exam.submissions / exam.total) * 100}%` }}
+                            style={{ width: `0%` }}
                           />
                         </div>
                         <span className="text-xs text-muted-foreground">
-                          {exam.submissions}/{exam.total}
+                          0 submissions
                         </span>
                       </div>
                     </div>

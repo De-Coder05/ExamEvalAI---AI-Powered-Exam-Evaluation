@@ -1,0 +1,302 @@
+[
+    {
+        "subject": "Maths",
+        "type": "one-word",
+        "question": "What is the square root of 144?",
+        "answer": "12"
+    },
+    {
+        "subject": "Maths",
+        "type": "one-word",
+        "question": "What is the value of pi to two decimal places?",
+        "answer": "3.14"
+    },
+    {
+        "subject": "Maths",
+        "type": "one-word",
+        "question": "What is 20 percent of 150?",
+        "answer": "30"
+    },
+    {
+        "subject": "Maths",
+        "type": "one-word",
+        "question": "Solve for x: 2x = 10",
+        "answer": "5"
+    },
+    {
+        "subject": "Maths",
+        "type": "one-word",
+        "question": "What is a polygon with 5 sides called?",
+        "answer": "Pentagon"
+    },
+    {
+        "subject": "Maths",
+        "type": "one-word",
+        "question": "What is the derivative of x^2?",
+        "answer": "2x"
+    },
+    {
+        "subject": "Maths",
+        "type": "short-answer",
+        "question": "Explain Pythagoras theorem.",
+        "answer": "In a right-angled triangle, the square of the hypotenuse is equal to the sum of the squares of the other two sides."
+    },
+    {
+        "subject": "Maths",
+        "type": "short-answer",
+        "question": "Define a prime number.",
+        "answer": "A prime number is a natural number greater than 1 that has no positive divisors other than 1 and itself."
+    },
+    {
+        "subject": "Maths",
+        "type": "short-answer",
+        "question": "What is a function in mathematics?",
+        "answer": "A function is a relation between a set of inputs and a set of permissible outputs where each input is related to exactly one output."
+    },
+    {
+        "subject": "Maths",
+        "type": "short-answer",
+        "question": "Describe the difference between mean and median.",
+        "answer": "The mean is the average of a set of numbers, calculated by dividing the sum by the count. The median is the middle value when the numbers are sorted."
+    },
+    {
+        "subject": "Physics",
+        "type": "one-word",
+        "question": "What is the SI unit of force?",
+        "answer": "Newton"
+    },
+    {
+        "subject": "Physics",
+        "type": "one-word",
+        "question": "What formula represents Newton's Second Law?",
+        "answer": "F=ma"
+    },
+    {
+        "subject": "Physics",
+        "type": "one-word",
+        "question": "Does light travel faster than sound?",
+        "answer": "Yes"
+    },
+    {
+        "subject": "Physics",
+        "type": "one-word",
+        "question": "What force keeps us on the ground?",
+        "answer": "Gravity"
+    },
+    {
+        "subject": "Physics",
+        "type": "one-word",
+        "question": "What is the unit of electric current?",
+        "answer": "Ampere"
+    },
+    {
+        "subject": "Physics",
+        "type": "one-word",
+        "question": "What is the speed of light in vacuum approx?",
+        "answer": "3x10^8"
+    },
+    {
+        "subject": "Physics",
+        "type": "short-answer",
+        "question": "Explain Newton's First Law of Motion.",
+        "answer": "An object at rest stays at rest and an object in motion stays in motion with the same speed and in the same direction unless acted upon by an unbalanced force."
+    },
+    {
+        "subject": "Physics",
+        "type": "short-answer",
+        "question": "Define potential energy.",
+        "answer": "Potential energy is the energy held by an object because of its position relative to other objects, stresses within itself, its electric charge, or other factors."
+    },
+    {
+        "subject": "Physics",
+        "type": "short-answer",
+        "question": "What is the law of conservation of energy?",
+        "answer": "Energy cannot be created or destroyed, only transformed from one form to another."
+    },
+    {
+        "subject": "Physics",
+        "type": "short-answer",
+        "question": "Explain the concept of velocity.",
+        "answer": "Velocity is the speed of an object in a given direction."
+    },
+    {
+        "subject": "Chemistry",
+        "type": "one-word",
+        "question": "What is the chemical symbol for Gold?",
+        "answer": "Au"
+    },
+    {
+        "subject": "Chemistry",
+        "type": "one-word",
+        "question": "What is the pH level of pure water?",
+        "answer": "7"
+    },
+    {
+        "subject": "Chemistry",
+        "type": "one-word",
+        "question": "What element has atomic number 1?",
+        "answer": "Hydrogen"
+    },
+    {
+        "subject": "Chemistry",
+        "type": "one-word",
+        "question": "What is the hardest natural substance?",
+        "answer": "Diamond"
+    },
+    {
+        "subject": "Chemistry",
+        "type": "one-word",
+        "question": "What gas do plants absorb from the atmosphere?",
+        "answer": "CO2"
+    },
+    {
+        "subject": "Chemistry",
+        "type": "one-word",
+        "question": "What is the main gas in Earth's atmosphere?",
+        "answer": "Nitrogen"
+    },
+    {
+        "subject": "Chemistry",
+        "type": "short-answer",
+        "question": "Define an isotope.",
+        "answer": "Isotopes are variants of a particular chemical element which differ in neutron number, and consequently in nucleon number."
+    },
+    {
+        "subject": "Chemistry",
+        "type": "short-answer",
+        "question": "Explain covalent bonding.",
+        "answer": "A covalent bond is a chemical bond that involves the sharing of electron pairs between atoms."
+    },
+    {
+        "subject": "Chemistry",
+        "type": "short-answer",
+        "question": "What is oxidation?",
+        "answer": "Oxidation is the loss of electrons during a reaction by a molecule, atom or ion."
+    },
+    {
+        "subject": "Chemistry",
+        "type": "short-answer",
+        "question": "Describe the periodic table.",
+        "answer": "The periodic table is a tabular display of the chemical elements, which are arranged by atomic number, electron configuration, and recurring chemical properties."
+    },
+    {
+        "subject": "Biology",
+        "type": "one-word",
+        "question": "What is the powerhouse of the cell?",
+        "answer": "Mitochondria"
+    },
+    {
+        "subject": "Biology",
+        "type": "one-word",
+        "question": "What is the largest organ in the human body?",
+        "answer": "Skin"
+    },
+    {
+        "subject": "Biology",
+        "type": "one-word",
+        "question": "What molecule carries genetic information?",
+        "answer": "DNA"
+    },
+    {
+        "subject": "Biology",
+        "type": "one-word",
+        "question": "What process do plants use to make food?",
+        "answer": "Photosynthesis"
+    },
+    {
+        "subject": "Biology",
+        "type": "one-word",
+        "question": "How many chambers does the human heart have?",
+        "answer": "4"
+    },
+    {
+        "subject": "Biology",
+        "type": "one-word",
+        "question": "What is the basic unit of life?",
+        "answer": "Cell"
+    },
+    {
+        "subject": "Biology",
+        "type": "short-answer",
+        "question": "Explain the function of red blood cells.",
+        "answer": "Red blood cells carry oxygen from our lungs to the rest of our bodies."
+    },
+    {
+        "subject": "Biology",
+        "type": "short-answer",
+        "question": "Define natural selection.",
+        "answer": "Natural selection is the process whereby organisms better adapted to their environment tend to survive and produce more offspring."
+    },
+    {
+        "subject": "Biology",
+        "type": "short-answer",
+        "question": "What is the difference between mitosis and meiosis?",
+        "answer": "Mitosis results in two identical daughter cells, whereas meiosis results in four sex cells."
+    },
+    {
+        "subject": "Biology",
+        "type": "short-answer",
+        "question": "Describe the role of the nervous system.",
+        "answer": "The nervous system transmits signals between the brain and the rest of the body, including internal organs."
+    },
+    {
+        "subject": "Computer Science",
+        "type": "one-word",
+        "question": "What does CPU stand for?",
+        "answer": "Central Processing Unit"
+    },
+    {
+        "subject": "Computer Science",
+        "type": "one-word",
+        "question": "What does HTML stand for?",
+        "answer": "HyperText Markup Language"
+    },
+    {
+        "subject": "Computer Science",
+        "type": "one-word",
+        "question": "What is 8 bits called?",
+        "answer": "Byte"
+    },
+    {
+        "subject": "Computer Science",
+        "type": "one-word",
+        "question": "Which language is used for styling web pages?",
+        "answer": "CSS"
+    },
+    {
+        "subject": "Computer Science",
+        "type": "one-word",
+        "question": "What is the brain of the computer?",
+        "answer": "CPU"
+    },
+    {
+        "subject": "Computer Science",
+        "type": "one-word",
+        "question": "What is the main circuit board called?",
+        "answer": "Motherboard"
+    },
+    {
+        "subject": "Computer Science",
+        "type": "short-answer",
+        "question": "Explain Object-Oriented Programming (OOP).",
+        "answer": "Object-Oriented Programming is a programming paradigm based on the concept of 'objects', which can contain data and code: data in the form of fields, and code, in the form of procedures."
+    },
+    {
+        "subject": "Computer Science",
+        "type": "short-answer",
+        "question": "What is an algorithm?",
+        "answer": "An algorithm is a finite sequence of well-defined, computer-implementable instructions, typically to solve a class of problems or to perform a computation."
+    },
+    {
+        "subject": "Computer Science",
+        "type": "short-answer",
+        "question": "Define Cloud Computing.",
+        "answer": "Cloud computing is the on-demand availability of computer system resources, especially data storage and computing power, without direct active management by the user."
+    },
+    {
+        "subject": "Computer Science",
+        "type": "short-answer",
+        "question": "What is the difference between RAM and ROM?",
+        "answer": "RAM is volatile memory that temporarily stores the files you are working on. ROM is non-volatile memory that permanently stores instructions for your computer."
+    }
+]

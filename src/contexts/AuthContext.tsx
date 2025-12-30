@@ -1,18 +1,18 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { User, Session } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
+
 
 type AppRole = "student" | "professor";
 
 interface AuthContextType {
-  user: User | null;
-  session: Session | null;
+  user: any | null; // Changed from Supabase User
   role: AppRole | null;
   loading: boolean;
   signUp: (email: string, password: string, role: AppRole, fullName?: string) => Promise<{ error: Error | null }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signInWithGoogle: () => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
+  setToken: (token: string | null) => void;
+  token: string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -26,116 +26,116 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [role, setRole] = useState<AppRole | null>(null);
+  const [user, setUser] = useState<any | null>(null);
+  const [token, setTokenState] = useState<string | null>(localStorage.getItem("token"));
   const [loading, setLoading] = useState(true);
 
-  const fetchUserRole = async (userId: string) => {
-    const { data, error } = await supabase.rpc("get_user_role", { _user_id: userId });
-    if (!error && data) {
-      setRole(data as AppRole);
+  const setToken = (newToken: string | null) => {
+    if (newToken) {
+      localStorage.setItem("token", newToken);
+    } else {
+      localStorage.removeItem("token");
     }
+    setTokenState(newToken);
   };
 
   useEffect(() => {
-    // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (session?.user) {
-          // Defer Supabase calls with setTimeout to prevent deadlock
-          setTimeout(() => {
-            fetchUserRole(session.user.id);
-          }, 0);
+    const fetchUser = async () => {
+      if (!token) {
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData);
         } else {
-          setRole(null);
+          setToken(null);
+          setUser(null);
         }
+      } catch (error) {
+        console.error("Error fetching user:", error);
+        setToken(null);
+        setUser(null);
+      } finally {
         setLoading(false);
       }
-    );
+    };
 
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchUserRole(session.user.id);
-      }
-      setLoading(false);
-    });
+    fetchUser();
+  }, [token]);
 
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const signUp = async (email: string, password: string, role: AppRole, fullName?: string) => {
-    const redirectUrl = `${window.location.origin}/`;
-    
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: redirectUrl,
-        data: {
-          full_name: fullName,
-        },
-      },
-    });
-
-    if (error) {
-      return { error };
-    }
-
-    // Insert user role
-    if (data.user) {
-      const { error: roleError } = await supabase
-        .from("user_roles")
-        .insert({ user_id: data.user.id, role });
-
-      if (roleError) {
-        return { error: roleError };
-      }
-    }
-
+  const signInWithGoogle = async () => {
+    window.location.href = "http://localhost:5001/auth/google";
     return { error: null };
   };
 
-  const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    return { error };
-  };
-
-  const signInWithGoogle = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/`,
-      },
-    });
-    return { error };
-  };
-
   const signOut = async () => {
-    await supabase.auth.signOut();
-    setRole(null);
+    setToken(null);
+    setUser(null);
+    window.location.href = "/";
+  };
+
+  const signUp = async (email: string, password: string, role: AppRole, fullName?: string) => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, role, displayName: fullName }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Signup failed");
+      }
+
+      setToken(data.token);
+      return { error: null };
+    } catch (error: any) {
+      return { error: error };
+    }
+  };
+
+  const signIn = async (email: string, password: string) => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Login failed");
+      }
+
+      setToken(data.token);
+      return { error: null };
+    } catch (error: any) {
+      return { error: error };
+    }
   };
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        session,
-        role,
+        role: user?.role || null, // Derived from user object
         loading,
         signUp,
         signIn,
         signInWithGoogle,
         signOut,
+        setToken,
+        token,
       }}
     >
       {children}
