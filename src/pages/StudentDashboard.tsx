@@ -32,20 +32,6 @@ const StudentDashboard = () => {
   const { user, role, loading, signOut } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!loading && (!user || role !== "student")) {
-      navigate("/auth");
-    }
-  }, [user, role, loading, navigate]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
   const [availableExams, setAvailableExams] = useState<Exam[]>([]);
   const [mySubmissions, setMySubmissions] = useState<any[]>([]);
   const [showAnalytics, setShowAnalytics] = useState(false);
@@ -77,10 +63,26 @@ const StudentDashboard = () => {
   };
 
   useEffect(() => {
-    fetchData();
-    const interval = setInterval(fetchData, 10000); // Poll every 10 seconds for real-time updates
-    return () => clearInterval(interval);
+    if (user) {
+      fetchData();
+      const interval = setInterval(fetchData, 10000);
+      return () => clearInterval(interval);
+    }
   }, [user]);
+
+  useEffect(() => {
+    if (!loading && (!user || role !== "student")) {
+      navigate("/auth");
+    }
+  }, [user, role, loading, navigate]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   const examsTaken = mySubmissions.length;
   const avgScore = examsTaken > 0
