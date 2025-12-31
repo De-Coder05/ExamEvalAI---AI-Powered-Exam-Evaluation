@@ -12,7 +12,7 @@ const Index = () => {
   return (
     <>
       <Helmet>
-        <title>ExamEval - AI-Powered Exam Evaluation System</title>
+        <title>ExamEvalAI | AI-Powered Exam Evaluation</title>
         <meta
           name="description"
           content="Transform exam evaluation with AI. Automated grading using NLP-powered analysis for one-word and short-answer questions. Get instant feedback and comprehensive analytics."

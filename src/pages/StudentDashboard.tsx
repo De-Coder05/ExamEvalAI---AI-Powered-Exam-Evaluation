@@ -103,7 +103,7 @@ const StudentDashboard = () => {
   return (
     <>
       <Helmet>
-        <title>Student Dashboard | AI Exam Evaluator</title>
+        <title>Student Dashboard | ExamEvalAI</title>
         <meta name="description" content="View your exam results, track progress, and manage your academic performance" />
       </Helmet>
 
@@ -117,7 +117,7 @@ const StudentDashboard = () => {
               </div>
               <div>
                 <h1 className="font-serif font-bold text-foreground">Student Portal</h1>
-                <p className="text-xs text-muted-foreground">AI Exam Evaluator</p>
+                <p className="text-xs text-muted-foreground">ExamEvalAI</p>
               </div>
             </div>
             <div className="flex items-center gap-4">

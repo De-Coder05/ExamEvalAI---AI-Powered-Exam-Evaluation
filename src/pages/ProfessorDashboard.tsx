@@ -101,7 +101,7 @@ const ProfessorDashboard = () => {
   return (
     <>
       <Helmet>
-        <title>Professor Dashboard | AI Exam Evaluator</title>
+        <title>Professor Dashboard | ExamEvalAI</title>
         <meta name="description" content="Manage exams, grade submissions, and track student performance with AI assistance" />
       </Helmet>
 
@@ -115,7 +115,7 @@ const ProfessorDashboard = () => {
               </div>
               <div>
                 <h1 className="font-serif font-bold text-foreground">Professor Portal</h1>
-                <p className="text-xs text-muted-foreground">AI Exam Evaluator</p>
+                <p className="text-xs text-muted-foreground">ExamEvalAI</p>
               </div>
             </div>
             <div className="flex items-center gap-4">

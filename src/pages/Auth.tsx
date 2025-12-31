@@ -156,12 +156,10 @@ const Auth = () => {
                 <Brain className="w-8 h-8 text-primary-foreground" />
               </div>
               <h1 className="text-2xl font-serif font-bold text-foreground">
-                {mode === "login" ? "Welcome Back" : "Create Account"}
+                Welcome to <span className="gradient-text">ExamEvalAI</span>
               </h1>
               <p className="text-muted-foreground mt-2">
-                {mode === "login"
-                  ? "Sign in to access your dashboard"
-                  : "Join the AI-powered evaluation platform"}
+                The intelligent platform for seamless exam creation and automated evaluation.
               </p>
             </div>
 

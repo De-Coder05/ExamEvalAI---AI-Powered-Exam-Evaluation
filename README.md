@@ -1,73 +1,50 @@
-# Welcome to your Lovable project
+# ExamEvalAI
 
-## Project info
+**ExamEvalAI** is a modern, AI-powered platform designed to streamline the exam creation, taking, and grading process. By leveraging Natural Language Processing (NLP), we provide instant, intelligent feedback and grading for descriptive answers, saving professors time and giving students immediate insights.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Features
 
-## How can I edit this code?
+- **For Professors:**
+    - **One-Click Exam Creation (AI)**: Generate exams instantly from a subject topic using our Question Bank.
+    - **Automated Grading**: Accurate scoring using NLP (Cosine Similarity & Keyword Extraction).
+    - **Analytics**: Visualize class performance with interactive charts.
+    - **Real-Time Dashboard**: See submissions as they happen.
 
-There are several ways of editing your application.
+- **For Students:**
+    - **Take Exams Online**: Clean, distraction-free interface.
+    - **Instant Results**: Receive score and detailed per-question feedback immediately.
+    - **Performance Tracking**: View progress charts and past exam history.
+    - **Secure Auth**: Google OAuth & Email/Password login.
 
-**Use Lovable**
+## Tech Stack
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+- **Frontend**: React, Vite, TailwindCSS, shadcn/ui, Recharts, Famer Motion.
+- **Backend**: Node.js, Express, MongoDB.
+- **AI/NLP**: Python (Flask/Script), NLTK, Scikit-Learn.
+- **Deployment**: Vercel (Frontend) + Render (Backend/Python).
 
-Changes made via Lovable will be committed automatically to this repo.
+## Getting Started
 
-**Use your preferred IDE**
+1.  Clone the repository.
+2.  Install dependencies:
+    ```bash
+    npm install
+    cd backend && npm install && pip install -r requirements.txt
+    ```
+3.  Set up Environment Variables (`.env`).
+4.  Run locally:
+    ```bash
+    # Terminal 1 (Frontend)
+    npm run dev
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+    # Terminal 2 (Backend)
+    cd backend && npm start
+    ```
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## Deployment
 
-Follow these steps:
+- **Frontend**: Vercel
+- **Backend**: Render
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+---
+Built with ❤️ by [Your Name/Team]
