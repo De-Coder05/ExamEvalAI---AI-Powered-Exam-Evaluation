@@ -76,6 +76,17 @@ router.post('/', verifyToken, async (req, res) => {
     }
 });
 
+// Get single exam by ID
+router.get('/:id', verifyToken, async (req, res) => {
+    try {
+        const exam = await Exam.findById(req.params.id).populate('creator', 'displayName email');
+        if (!exam) return res.status(404).json({ message: "Exam not found" });
+        res.status(200).json(exam);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
 // Get all exams
 router.get('/', verifyToken, async (req, res) => {
     try {

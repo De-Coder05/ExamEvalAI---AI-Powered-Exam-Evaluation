@@ -45,13 +45,13 @@ const TakeExam = () => {
             // Since we probably don't have GET /exams/:id yet, let's implement finding from all exams or user passed state
             // For correctness, I should have added GET /exams/:id to backend. 
             // Assuming I'll add it or fetching all. Let's fetch all and find for now to be safe with existing tools.
-            const response = await fetch("http://localhost:5001/exams", {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/exams/${examId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            const data = await response.json();
-            const foundExam = data.find((e: any) => e._id === examId);
-            if (foundExam) {
-                setExam(foundExam);
+
+            if (response.ok) {
+                const data = await response.json();
+                setExam(data);
             } else {
                 toast({ title: "Error", description: "Exam not found", variant: "destructive" });
                 navigate("/student-dashboard");
