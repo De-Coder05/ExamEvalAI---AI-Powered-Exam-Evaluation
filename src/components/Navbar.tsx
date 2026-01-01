@@ -43,7 +43,7 @@ const Navbar = () => {
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4">
             <a
-              href="https://github.com"
+              href="https://github.com/De-Coder05/ExamEvalAI---AI-Powered-Exam-Evaluation"
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-foreground transition-colors"
