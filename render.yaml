@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: exam-genie-backend
+    env: node
+    root: backend
+    buildCommand: ./render-build.sh
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 20.10.0
+    autoDeploy: false
+
+  - type: cron
+    name: keep-alive-pinger
+    env: node
+    schedule: "*/14 * * * *"
+    command: curl -I https://examevalai.onrender.com || echo "Ping failed"
